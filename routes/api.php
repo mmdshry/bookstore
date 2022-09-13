@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::get('/books', 'BooksController@getCollection');
 
-Route::post('/books', 'BooksController@post')->middleware('auth.admin');
+Route::post('/books', 'BooksController@post')->middleware(['auth', 'auth.admin']);
 
-Route::post('/books/{book}/reviews', 'BooksController@postReview');
+Route::post('/books/{book}/reviews', 'BooksController@postReview')->middleware('auth');
 

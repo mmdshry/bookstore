@@ -139,7 +139,7 @@ class BookListTest extends TestCase
 
     public function testTitleSort()
     {
-        $book1 = factory(Book::class)->create(['title' => 'PHP for begginers']);
+        $book1 = factory(Book::class)->create(['title' => 'PHP for beginners']);
         $book2 = factory(Book::class)->create(['title' => 'Javascript for dummies']);
         $book3 = factory(Book::class)->create(['title' => 'Advanced Python']);
 
@@ -159,7 +159,7 @@ class BookListTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $book1        = factory(Book::class)->create(['title' => 'PHP for begginers']); // 3
+        $book1        = factory(Book::class)->create(['title' => 'PHP for beginners']); // 3
         $book1Review1 = factory(BookReview::class)->make(['review' => 1]);
         $book1Review1->user()->associate($user);
         $book1Review2 = factory(BookReview::class)->make(['review' => 5]);

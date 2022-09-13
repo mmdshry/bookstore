@@ -15,10 +15,10 @@ class BookPostTest extends TestCase
         $author = factory(Author::class)->create();
 
         $response = $this->postJson('/api/books', [
-            'isbn' => '9788328302341',
-            'title' => 'PHP for beginners',
+            'isbn'        => '9788328302341',
+            'title'       => 'PHP for beginners',
             'description' => 'Lorem ipsum',
-            'authors' => [$author->id],
+            'authors'     => [$author->id],
         ]);
 
         $response->assertStatus(401);
@@ -26,16 +26,16 @@ class BookPostTest extends TestCase
 
     public function testDenyNonAdminUserAccess()
     {
-        $user = factory(User::class)->create();
+        $user   = factory(User::class)->create();
         $author = factory(Author::class)->create();
 
         $response = $this
             ->actingAs($user)
             ->postJson('/api/books', [
-                'isbn' => '9788328302341',
-                'title' => 'Clean code',
+                'isbn'        => '9788328302341',
+                'title'       => 'Clean code',
                 'description' => 'Lorem ipsum',
-                'authors' => [$author->id],
+                'authors'     => [$author->id],
             ]);
 
         $response->assertStatus(403);
@@ -43,20 +43,20 @@ class BookPostTest extends TestCase
 
     public function testSuccessfulPost()
     {
-        $user = factory(User::class)->state('admin')->create();
+        $user   = factory(User::class)->state('admin')->create();
         $author = factory(Author::class)->create();
 
         $response = $this
             ->actingAs($user)
             ->postJson('/api/books', [
-                'isbn' => '9788328302341',
-                'title' => 'Clean code',
+                'isbn'        => '9788328302341',
+                'title'       => 'Clean code',
                 'description' => 'Lorem ipsum',
-                'authors' => [$author->id],
+                'authors'     => [$author->id],
             ]);
 
         $response->assertStatus(201);
-        $id = $response->json('data.id');
+        $id   = $response->json('data.id');
         $book = Book::find($id);
 
         $this->assertResponseContainsBook($response, $book);
@@ -71,18 +71,18 @@ class BookPostTest extends TestCase
      */
     public function testValidation(array $invalidData, string $invalidParameter)
     {
-        $book = factory(Book::class)->create(['isbn' => '9788328302341']);
-        $user = factory(User::class)->state('admin')->create();
-        $authors = factory(Author::class, 2)->create();
+        $book      = factory(Book::class)->create(['isbn' => '9788328302341']);
+        $user      = factory(User::class)->state('admin')->create();
+        $authors   = factory(Author::class, 2)->create();
         $authorIds = $authors->pluck('id');
 
         $validData = [
-            'isbn' => '9788328347786',
-            'title' => 'Book title',
+            'isbn'        => '9788328347786',
+            'title'       => 'Book title',
             'description' => 'Lorem ipsum',
-            'authors' => $authorIds,
+            'authors'     => $authorIds,
         ];
-        $data = array_merge($validData, $invalidData);
+        $data      = array_merge($validData, $invalidData);
 
         $response = $this
             ->actingAs($user)

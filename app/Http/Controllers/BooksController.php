@@ -5,16 +5,12 @@ declare (strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Book;
-use App\BookReview;
 use App\Http\Requests\PostBookRequest;
 use App\Http\Requests\PostBookReviewRequest;
 use App\Http\Resources\BookResource;
-use App\Http\Resources\BookReviewResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class BooksController extends Controller
 {
@@ -37,9 +33,23 @@ class BooksController extends Controller
         return BookResource::collection($books->paginate());
     }
 
-    public function post(PostBookRequest $request)
+    /**
+     * Creates a new book
+     *
+     * @param  PostBookRequest  $request
+     * @return BookResource
+     */
+    public function post(PostBookRequest $request): BookResource
     {
-        //@todo code here
+        $book              = new Book();
+        $book->title       = $request['title'];
+        $book->isbn        = $request['isbn'];
+        $book->description = $request['description'];
+        $book->save();
+
+        $book->authors()->attach($request['authors']);
+
+        return new BookResource($book);
     }
 
     public function postReview(Book $book, PostBookReviewRequest $request)
@@ -81,7 +91,7 @@ class BooksController extends Controller
      */
     private function sorting(Request $request, Builder $books): void
     {
-        if (isset($request['sortColumn'])) {
+        if ($request->filled('sortColumn')) {
             $books->sorting($request['sortColumn'], $request['sortDirection']);
         }
     }
