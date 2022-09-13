@@ -13,26 +13,27 @@ class BookListTest extends TestCase
 {
     public function testResponseStructure()
     {
-        factory(Book::class, 5)->make()
-
+        factory(Book::class, 5)
+            ->make()
             ->each(function (Book $book) {
-            $book->save();
-            $book->authors()->saveMany([
-                factory(Author::class)->create(),
-            ]);
+                $book->save();
+                $book->authors()->saveMany([
+                    factory(Author::class)->create(),
+                ]);
 
-            $reviews = factory(BookReview::class, 3)->make()->each(function (BookReview $review) {
-                $review->user()->associate(factory(User::class)->create());
+                $reviews = factory(BookReview::class, 3)->make()->each(function (BookReview $review
+                ) {
+                    $review->user()->associate(factory(User::class)->create());
+                });
+                $book->reviews()->saveMany($reviews);
             });
-            $book->reviews()->saveMany($reviews);
-        });
 
         $response = $this->getJson('/api/books');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'data' => [
+            'data'  => [
                 '*' => [
                     'id',
                     'isbn',
@@ -45,7 +46,7 @@ class BookListTest extends TestCase
                             'surname',
                         ],
                     ],
-                    'review' => [
+                    'review'  => [
                         'avg',
                         'count',
                     ],
@@ -57,7 +58,7 @@ class BookListTest extends TestCase
                 'next',
                 'prev',
             ],
-            'meta' => [
+            'meta'  => [
                 'current_page',
                 'from',
                 'last_page',
@@ -158,14 +159,14 @@ class BookListTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $book1 = factory(Book::class)->create(['title' => 'PHP for begginers']); // 3
+        $book1        = factory(Book::class)->create(['title' => 'PHP for begginers']); // 3
         $book1Review1 = factory(BookReview::class)->make(['review' => 1]);
         $book1Review1->user()->associate($user);
         $book1Review2 = factory(BookReview::class)->make(['review' => 5]);
         $book1Review2->user()->associate($user);
         $book1->reviews()->saveMany([$book1Review1, $book1Review2]);
 
-        $book2 = factory(Book::class)->create(['title' => 'Javascript for dummies']); // 6
+        $book2        = factory(Book::class)->create(['title' => 'Javascript for dummies']); // 6
         $book2Review1 = factory(BookReview::class)->make(['review' => 4]);
         $book2Review1->user()->associate($user);
         $book2Review2 = factory(BookReview::class)->make(['review' => 8]);
@@ -188,8 +189,8 @@ class BookListTest extends TestCase
 
     public function testPagination()
     {
-        $books = factory(Book::class, 30)->create();
-        $firstPageBooks = $books->forPage(1, 15);
+        $books           = factory(Book::class, 30)->create();
+        $firstPageBooks  = $books->forPage(1, 15);
         $secondPageBooks = $books->forPage(2, 15);
 
         $response = $this->getJson('/api/books?page=1');

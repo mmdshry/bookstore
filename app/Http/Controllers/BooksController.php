@@ -10,15 +10,31 @@ use App\Http\Requests\PostBookRequest;
 use App\Http\Requests\PostBookReviewRequest;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\BookReviewResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class BooksController extends Controller
 {
-    public function getCollection(Request $request)
+    /**
+     * Returns book collection
+     *
+     * @param  Request  $request
+     * @return AnonymousResourceCollection
+     */
+    public function getCollection(Request $request): AnonymousResourceCollection
     {
-        //@todo code here
+        $books = Book::query();
+
+        $this->searchTitle($request, $books);
+
+        $this->searchAuthors($request, $books);
+
+        $this->sorting($request, $books);
+
+        return BookResource::collection($books->paginate());
     }
 
     public function post(PostBookRequest $request)
@@ -29,5 +45,44 @@ class BooksController extends Controller
     public function postReview(Book $book, PostBookReviewRequest $request)
     {
         //@todo code here
+    }
+
+    /**
+     * Performs title search if title attribute has filled
+     *
+     * @param  Request  $request
+     * @param  Builder  $books
+     */
+    private function searchTitle(Request $request, Builder $books): void
+    {
+        if ($request->filled('title')) {
+            $books->searchTitle($request['title']);
+        }
+    }
+
+    /**
+     * Performs author search if title attribute has filled
+     *
+     * @param  Request  $request
+     * @param  Builder  $books
+     */
+    private function searchAuthors(Request $request, Builder $books): void
+    {
+        if ($request->filled('authors')) {
+            $books->searchAuthors($request['authors']);
+        }
+    }
+
+    /**
+     * Performs sorting if sortColumn attribute has filled
+     *
+     * @param  Request  $request
+     * @param  Builder  $books
+     */
+    private function sorting(Request $request, Builder $books): void
+    {
+        if (isset($request['sortColumn'])) {
+            $books->sorting($request['sortColumn'], $request['sortDirection']);
+        }
     }
 }
