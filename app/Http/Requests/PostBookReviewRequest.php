@@ -14,7 +14,8 @@ class PostBookReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //@todo code here
+            'review'  => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|min:1',
         ];
     }
 }

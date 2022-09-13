@@ -5,12 +5,15 @@ declare (strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Book;
+use App\BookReview;
 use App\Http\Requests\PostBookRequest;
 use App\Http\Requests\PostBookReviewRequest;
 use App\Http\Resources\BookResource;
+use App\Http\Resources\BookReviewResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class BooksController extends Controller
 {
@@ -52,9 +55,25 @@ class BooksController extends Controller
         return new BookResource($book);
     }
 
-    public function postReview(Book $book, PostBookReviewRequest $request)
+    /**
+     * Creates new book review
+     *
+     * @param  Book  $book
+     * @param  PostBookReviewRequest  $request
+     * @return BookReviewResource
+     */
+    public function postReview(Book $book, PostBookReviewRequest $request): BookReviewResource
     {
-        //@todo code here
+        $bookReview          = new BookReview();
+        $bookReview->review  = $request['review'];
+        $bookReview->comment = $request['comment'];
+
+        $bookReview->user_id = Auth::id();
+        $bookReview->book_id = $book->id;
+
+        $bookReview->save();
+
+        return new BookReviewResource($bookReview);
     }
 
     /**
