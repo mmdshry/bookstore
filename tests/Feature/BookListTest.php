@@ -9,7 +9,7 @@ use App\User;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-class BooksListTest extends TestCase
+class BookListTest extends TestCase
 {
     public function testResponseStructure()
     {
